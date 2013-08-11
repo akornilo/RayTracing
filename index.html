@@ -6,8 +6,11 @@
 	var myScene = new Ray(document.getElementById("myCanvas"));
 
 	myScene.addThing(new Ball(200, 200, 50, 50, [0, 255, 0, 255]))
+	.addThing(new Ball(300, 300, 150, 50, [0, 255, 0, 255]))
 	.addThing(new Plane(0, 0, 1, 200, [200, 200, 0, 255]))
-	.addThing(new Plane(0, 1, 0, 300, [200, 0, 0, 255]))
+	.addThing(new Plane(0, 1, 0, 400, [200, 0, 0, 255]))
+	.addThing(new Plane(-1, 0, 0.5, 3, [0, 0, 200, 255]))
+
 	.draw();
 
   </script>

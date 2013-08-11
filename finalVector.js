@@ -110,7 +110,7 @@ function Ray(canvas) {
   this.data = this.imgData.data;
 
   //objects and light sources
-  this.lights = new Point(200, 0, -100);
+  this.lights = new Point(400, -100, -100);
   this.objects = [];
   //default background is blue.
   this.background = [0, 0, 255, 255];
