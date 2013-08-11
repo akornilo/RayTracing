@@ -46,8 +46,6 @@ Ball.prototype.isHit = function(direction, point) {
 
   var disc = Math.pow(this.r, 2) - (Vector.dotProduct(sceneToCenter, sceneToCenter) - v*v);
 
-//  console.log(direction, point, sceneToCenter, v, disc);
-
   if(disc >= 0) {
     return v - Math.sqrt(disc);
   }
@@ -58,10 +56,44 @@ Ball.prototype.getNormalVector = function(point) {
 
   var pointToCenter = new Vector(point.x - this.x, point.y - this.y, point.z - this.z);
 
-
   return pointToCenter.normalized();
   
 }
+
+function Plane(a, b, c, d, color) {
+
+  //create plane described by ax + by + cz = d;
+
+  Thing.call(this);
+  this.a = a;
+  this.b = b;
+  this.c = c;
+  this.d = d;
+  this.color = color;
+}
+
+  Plane.prototype = new Thing();
+
+  Plane.prototype.isHit = function(direction, point) {
+
+    var v = this.a * direction.x + this.b * direction.y + this.c * direction.z;
+
+
+    if (v == 0) {
+      return -1;
+    } else {
+      var t = (this.d - point.x * this.a - point.y * this.b - point.z * this.c) / v;
+      if (t < 0) {
+        return -1;
+      } else {
+        return t;
+      }
+    }
+  }
+
+  Plane.prototype.getNormalVector = function(point) {
+    return new Vector(-this.a, -this.b, -this.c).normalized();
+  }
 
 function Ray(canvas) {
   
@@ -78,23 +110,20 @@ function Ray(canvas) {
   this.data = this.imgData.data;
 
   //objects and light sources
-  this.lights = new Point(50, 0, -20);
+  this.lights = new Point(200, 0, -100);
   this.objects = [];
   //default background is blue.
   this.background = [0, 0, 255, 255];
 
   //eye/camera of the view
-  this.eye = new Point(200, 200, -1000);
+  this.eye = new Point(200, 100, -600);
 
 
   this.draw = function draw() {
     for(var i = 0; i < 4 * self.width * self.height; i+=4) {
-    //  console.log(self.data, "before")
       calculatePixel( (i / 4) % self.width, Math.floor((i / 4) / self.width));
-     // console.log(self.data, "after");
     }
 
-    console.log(self.data);
     self.context.putImageData(self.imgData, 0, 0);
     return self;
   
@@ -109,9 +138,9 @@ function Ray(canvas) {
      var pixel = (y * self.width + x) * 4;
 
       var color = self.objects[target.index].color;
-      self.data[pixel] = color[0] * intensity;
-      self.data[pixel + 1] = color[1] * intensity;
-      self.data[pixel + 2] = color[2] * intensity;
+      self.data[pixel] = color[0] * (.9 * intensity + .1);
+      self.data[pixel + 1] = color[1] * (.9 * intensity + .1);
+      self.data[pixel + 2] = color[2] * (.9 * intensity + .1);
       self.data[pixel + 3] = 255;
     } else {
       var pixel = (y * self.width + x) * 4;
@@ -160,16 +189,16 @@ function Ray(canvas) {
       return 0;
     } else { 
       //we want to create offset, so the object will not collide with itself.
-      var collision = objectHit(normalVector, new Point(
+      var collision = objectHit(lightVector, new Point(
           pos.x + normalVector.x * 0.001,
           pos.y + normalVector.y * 0.001,
           pos.z + normalVector.z * 0.001
           ));
 
+
       if(collision.index == -1) {
         return shade;
       } else {
-        console.log("??");
         return 0;
       }
 
